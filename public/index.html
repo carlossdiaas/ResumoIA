@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Resumo IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+  <!-- Header -->
+  <header class="bg-white shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-center text-indigo-600">
+        Resumo de Documentos com IA
+      </h1>
+      <p class="mt-2 text-center text-gray-500">
+        Envie PDF, DOCX ou TXT e receba um resumo automático
+      </p>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="max-w-4xl mx-auto px-4 py-8">
+    <!-- Card -->
+    <div class="bg-white shadow-md rounded-xl p-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-4">Upload e opções</h2>
+
+      <!-- Controles (IDs mantidos) -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt"
+               class="block w-full sm:w-auto text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 border rounded-md px-3 py-2 bg-white" />
+
+        <select id="mode" class="border rounded-md px-3 py-2 text-sm bg-white">
+          <option value="detailed">Detalhado</option>
+          <option value="short">Curto</option>
+        </select>
+
+        <button id="sendBtn" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:ring-2 focus:ring-indigo-500">
+          Enviar
+        </button>
+
+        <button id="downloadBtn" class="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200">
+          Baixar .txt
+        </button>
+      </div>
+
+      <!-- Dica -->
+      <p class="mt-3 text-xs text-gray-500">
+        Dica: PDFs escaneados (só imagem) podem precisar de OCR para extrair texto.
+      </p>
+    </div>
+
+    <!-- Saída (ID mantido) -->
+    <div class="bg-white shadow-md rounded-xl p-6 mt-6">
+      <h2 class="text-lg font-semibold text-gray-800 mb-3">Resumo</h2>
+      <pre id="out" class="p-4 bg-gray-50 rounded-lg min-h-[10rem] whitespace-pre-wrap text-gray-700"></pre>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t mt-12">
+    <div class="max-w-4xl mx-auto px-4 py-6 text-center text-gray-500 text-sm">
+      © 2025 — Resumo IA
+    </div>
+  </footer>
+
+  <!-- JS do app (sem mudanças) -->
+  <script defer src="/app.js"></script>
+</body>
+</html>
