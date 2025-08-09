@@ -2,6 +2,7 @@
 
 Um aplicativo web para **resumir documentos PDF, DOCX e TXT** usando a API da OpenAI.  
 O usuário faz upload do arquivo e recebe um resumo **curto** ou **detalhado** gerado automaticamente.
+Confira: https://mute-lexis-carlossdiaas-eb736700.koyeb.app/
 
 <img width="1317" height="818" alt="iPhone-14-Pro-1317x818" src="https://github.com/user-attachments/assets/f1248b12-88e1-4f70-b3a2-393748891225" />
 <img width="306" height="632" alt="iPhone-14-Pro-459x948 984375" src="https://github.com/user-attachments/assets/bfdcfdaa-3985-4797-9ee0-1a3946f54e4b" />
