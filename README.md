@@ -1,7 +1,7 @@
 # 📄 Resumo de Documentos com IA
 
 Um aplicativo web para **resumir documentos PDF, DOCX e TXT** usando a API da OpenAI.  
-O usuário faz upload do arquivo e recebe um resumo **curto** ou **detalhado** gerado automaticamente.
+O usuário faz upload do arquivo e recebe um resumo **curto** ou **detalhado** gerado automaticamente. <br>
 Confira: https://mute-lexis-carlossdiaas-eb736700.koyeb.app/
 
 <img width="1317" height="818" alt="iPhone-14-Pro-1317x818" src="https://github.com/user-attachments/assets/f1248b12-88e1-4f70-b3a2-393748891225" />
