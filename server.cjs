@@ -1,9 +1,10 @@
-// server.cjs — CommonJS
+// server.cjs — Node/Express (CommonJS)
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const fs = require('fs').promises;
+const fsSync = require('fs');
 const path = require('path');
 const OpenAI = require('openai');
 const pdfParse = require('pdf-parse');
@@ -13,10 +14,13 @@ const app = express();
 app.use(cors());
 app.use(express.static('public')); // serve /public
 
-// -------- Upload ----------
+// garante que a pasta temporária exista (importante em hosts)
+fsSync.mkdirSync('uploads', { recursive: true });
+
+// Multer: upload temporário
 const upload = multer({
   dest: 'uploads/',
-  limits: { fileSize: 15 * 1024 * 1024 }, // 15MB
+  limits: { fileSize: 15 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ok = [
       'application/pdf',
@@ -27,29 +31,25 @@ const upload = multer({
   }
 });
 
-// -------- OpenAI ----------
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// OpenAI
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// -------- Rotas ----------
-app.get('/health', (_req, res) => res.send('ok'));
+// Saúde
+app.get('/health', (_req, res) => res.status(200).send('ok'));
 
+// API: resumo
 app.post('/api/summarize', upload.single('file'), async (req, res) => {
-  // segurança básica
   if (!process.env.OPENAI_API_KEY) {
-    return res.status(500).json({ error: 'OPENAI_API_KEY ausente no .env' });
+    return res.status(500).json({ error: 'OPENAI_API_KEY ausente nas variáveis de ambiente' });
   }
-
   const file = req.file;
   if (!file) return res.status(400).json({ error: 'Arquivo não enviado.' });
 
   const mode = (req.query.mode || 'detailed').toLowerCase(); // 'short' | 'detailed'
 
   try {
-    // 1) extrair texto
     const text = (await extractText(file)).trim().replace(/\s+\n/g, '\n');
-    // remove temporário, mesmo se falhar a extração
+    // apaga arquivo temporário
     await fs.unlink(file.path).catch(() => {});
 
     if (!text || text.length < 20) {
@@ -58,9 +58,7 @@ app.post('/api/summarize', upload.single('file'), async (req, res) => {
       });
     }
 
-    // 2) resumir (map-reduce)
     const summary = await summarizeLongText(text, mode);
-
     return res.json({ summary });
   } catch (e) {
     console.error(e);
@@ -74,13 +72,13 @@ app.post('/api/summarize', upload.single('file'), async (req, res) => {
   }
 });
 
-// -------- Start ----------
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`Servidor rodando em http://localhost:${process.env.PORT || 3000}`);
+// Start
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
 
-// ============ Helpers ============
-
+// ==== Helpers ====
 async function extractText(file) {
   const ext = path.extname(file.originalname || '').toLowerCase();
 
@@ -89,25 +87,21 @@ async function extractText(file) {
     const data = await pdfParse(buf);
     return data.text || '';
   }
-
   if (ext === '.docx') {
     const result = await mammoth.extractRawText({ path: file.path });
     return result.value || '';
   }
-
-  // .txt (ou fallback)
+  // .txt
   return await fs.readFile(file.path, 'utf8');
 }
 
 function chunkText(str, targetSize = 6000) {
-  // divide por parágrafos para não “quebrar” no meio de frases
   const parts = [];
   let current = '';
   for (const para of str.split(/\n{2,}/)) {
     const candidate = current ? `${current}\n\n${para}` : para;
     if (candidate.length > targetSize) {
       if (current) parts.push(current);
-      // se o parágrafo por si só é gigante, corta bruto
       if (para.length > targetSize) {
         for (let i = 0; i < para.length; i += targetSize) {
           parts.push(para.slice(i, i + targetSize));
@@ -152,7 +146,7 @@ ${partials.map((s, i) => `[Parte ${i + 1}]\n${s}`).join('\n\n')}
 `.trim();
 
   const resp = await client.responses.create({
-    model: 'gpt-4.1', // pode trocar p/ 'gpt-4.1-mini' p/ reduzir custo
+    model: 'gpt-4.1', // pode usar 'gpt-4.1-mini' para reduzir custo
     input: combinedPrompt
   });
   return resp.output_text;
